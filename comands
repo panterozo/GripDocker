@@ -1,0 +1,279 @@
+# Angular CLI
+
+## Tutorial de [AcademiaBinaria](https://github.com/AcademiaBinaria/angular5)
+
+Primer tutorial: [Hola Mundo](https://academia-binaria.com/hola-angular-cli/)
+
+Comando que inicializa el proyecto con Angular-cli
+
+```
+ng new cash-flow -p cf --minimal true --routing true
+```
+
+
+Comando | Significado
+--------|------------
+ng|programa principal del cli instalado en la máquina
+new|comando para solicitar la generación una nueva aplicación
+cash-flow|nombre de la nueva aplicación
+-p|modificador para establecer un prefijo de nombrado
+cf|valor del prefijo, normalmente las iniciales de la aplicación
+–minimal|la aplicación en su mínima expresión
+true|valor para activar la anterior opción
+–routing|vamos a creara una aplicación SPA y eso requiere rutas
+true|valor para activar la anterior opción
+
+Se ingresa a la aplicación
+
+cd cash-flow
+
+## Inicializar aplicación
+npm start
+
+## Carpetas y ficheros
+
+.angular-cli.json : configuración del propio CLI
+
+package.json : dependencias de librerías y scripts
+
+src/ : la carpeta donde están los archivos fuentes
+
+index.html : un fichero HTML índice estándar
+
+main.ts : fichero TypeScript de arranque de la aplicación
+
+app/ : la carpeta con el código específico de tu aplicación
+
+app.module.ts : las aplicaciones son árboles de módulos, y este es su raíz
+
+app.component.ts : las páginas son árboles de componentes, y este es su raíz
+
+
+
+## Instalacion de otros paquetes
+
+Se instalan [milligram](https://milligram.io/) y [moment](https://momentjs.com/).
+
+```
+npm i milligram --save
+npm install moment --save
+```
+Y luego, se incluyen en el archivo de configuracion angular.json, en style, para milligram, y en scripts, para moment:
+
+```
+{
+  "styles": [
+      "../node_modules/milligram/dist/milligram.min.css",
+      "styles.css"
+      ],
+  "scripts": ["../node_modules/moment/min/moment.min.js"]
+}
+```
+
+
+Segundo tutorial: [Base aplicación angular](https://academia-binaria.com/base-aplicacion-angular/)
+
+**En Angular los módulos de declaran como clases de TypeScript**. Con ello, podemos ver en el archivo *app.module.ts* el módulo @NgModule:
+
+```js
+@NgModule({
+  declarations: [
+    AppComponent
+  ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+```
+El módulo App es el considerado módulo raíz, y de éste surgen los demás módulos, definidos en la propiedad **imports:[]**. Se puede ver la dependencia del módulo BrwoserModule y AppRoutingModule.
+
+```js
+imports: [
+  BrowserModule,
+  AppRoutingModule
+],
+```
+## Crear un módulo propio
+
+Para crear un módulo, se utiliza la instrucción **ng**:
+```
+ng g m lib/components
+```
+o así:
+```
+ng generate module lib/components
+```
+
+Ahora, para generar componentes:
+
+```
+ng g c lib/components/nav 
+ng g c lib/components/footer --export
+```
+
+Esta ejecución, actualiza información de cómo el componente es manejado por el módulo que se creó:
+
+### NAV
+```
+$ ng g c lib/components/nav
+CREATE src/app/lib/components/nav/nav.component.html (22 bytes)
+CREATE src/app/lib/components/nav/nav.component.spec.ts (607 bytes)
+CREATE src/app/lib/components/nav/nav.component.ts (256 bytes)
+CREATE src/app/lib/components/nav/nav.component.css (0 bytes)
+UPDATE src/app/lib/components/components.module.ts (258 bytes)
+```
+### FOOTER
+```
+$ ng g c lib/components/footer --export
+CREATE src/app/lib/components/footer/footer.component.html (25 bytes)
+CREATE src/app/lib/components/footer/footer.component.spec.ts (628 bytes)
+CREATE src/app/lib/components/footer/footer.component.ts (268 bytes)
+CREATE src/app/lib/components/footer/footer.component.css (0 bytes)
+UPDATE src/app/lib/components/components.module.ts (366 bytes)
+```
+
+Y el archivo **components.module.ts** cambia, agregando ambos import e incluyendo *FooterComponent* en *NgModule*, en la etiqueta *exports[]*:
+
+```js
+import { NavComponent } from './nav/nav.component';
+import { FooterComponent } from './footer/footer.component';
+...
+
+  exports: [FooterComponent]
+})
+```
+El flag *--export* incluye el componente *Footer* en el módulo. Este flag hace visible al componente *Footer*.
+
+El sigueinte comando generará un componente privado, solamente accesible desde el componente que lo creó. En este caso, desde dentro de NAV?.
+
+```
+ng g c lib/components/nav/title --flat
+```
+
+El flag --flat, le dice a *cli* que no le cree una carpeta particular. Así, queda todo dentro de la carpeta **nav/**.
+
+
+## Redireccionando
+
+En caso de errores, se redireccionaría a una pagina generica *404 Not Found*
+
+```
+ng g m views/not-found
+ng g c views/not-found/not-found --export --flat
+```
+
+## Bundles por ruta
+
+Para evitar cargar información que no se necesite, se realiza una carga onDemand de estas secciones.
+
+Se crea una dirección nueva llamada */opertions*, y se declara no exportado
+
+```
+ng g m views/operations --routing true
+ng g c views/operations/operations --flat
+```
+
+El flag *--routingg true*, nos generará el siguiente código dentro del modulo *operations*
+
+```js
+import { OperationsRoutingModule } from './operations-routing.module';
+```
+
+En la carpeta *operations/*, puede verse un archivo routing. En este se define la carga cuando sea accesado a la URL */operations*.
+
+El path de Routes cargará el módulo operations con su propio Routing:
+
+```js
+{
+  path: "operations",
+  loadChildren: "./views/operations/operations.module#OperationsModule"
+}
+```
+Cuando carge el módulo Operations, hay que indicarle qué cargará en routes.
+
+```js
+const routes: Routes = [
+  {
+    path: "",
+    component: OperationsComponent
+  }
+];
+```
+## Rutas paramétricas
+
+Para pasarle parámetros a la ruta Operations, debemos indicarle en path el valor **:id**, que recibirá el valor por POST o GET.
+
+```
+{
+  path: ":id",
+  component: ItemComponent
+}
+```
+# Tipos de datos en Angular
+## Directivas Angular
+
+Con el elemento *#*, se puede asociar un elemento a un ID y accesarlo desde cualquier parte del código:
+
+```html
+<input name="description"
+  #descriptionInput
+  [value]="operation.description"
+  (change)="operation.description=descriptionInput.value"
+  type="text" />
+```
+
+## Evaluador de expresiones
+
+Esto es el valor entre corchetes, que puede obtener el valor de una variable, típico en Angular 1.
+
+## Eventos
+
+Estos son los elementos entre paréntesis. En nuestro caso arriba, se usa para guardar en el modelo el valor actual del elemento *input* ante cada cambio de este.
+
+## Modelos entre [()]
+
+Esta directiva se conoce como *banana in a box*. Por ejemplo **[(ngModel)]="operation.amount"** enlaza doblemente el modelo **operation.amount** con la vista
+
+## Repeticiones
+
+Las repeticiones de código se realizan medianet la directiva ***ngFor="let iterador of array"**
+
+Un ejemplo de esto es el caso de un select:
+
+```html
+<select name="kind" [(ngModel)]="operation.kind">
+  <option [value]="">Please select a kind</option>
+  <option *ngFor="let kind of kindsOfOperations"
+      [value]="kind">{{kind}}</option>
+</select>
+```
+
+## Condicionales
+
+Directiva como ***ngIf** produce que se incluya o no un elemento en el DOM.
+
+
+## TypeScript
+
+Para crear una clase con *CLI*, se realiza de la siguiente manera:
+
+```
+ng g class views/operations/operation
+```
+
+Esta clase se define con *TypeScript*
+
+```js
+export class Operation {
+  public _id: string;
+  public amount: number = 0;
+  public description: string = "";
+  public kind: string;
+}
+```
+
+
+

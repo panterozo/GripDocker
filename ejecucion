@@ -1,0 +1,11 @@
+# eval $("C:\Program Files\Docker Toolbox\docker-machine.exe" env default)
+
+docker build -t nameproject .
+
+docker run -it -v //c/Users/igalvarez/Desktop/Proyectos/2018/Docker/GripPython:/usr/src/grip -p 8080:80 nameproject
+
+# Browser
+
+Ingresar a la ip del docker, puerto 8080
+
+% docker-machine ip

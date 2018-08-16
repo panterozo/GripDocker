@@ -1,0 +1,61 @@
+
+# Se debe crear la maquina virtual llamada default, utilizando el driver
+# virtualbox
+$ docker-machine create --driver virtualbox default
+
+# Para eliminar la virtual machine
+$ docker-machine rm default
+
+# Para ver mis máquinas docker
+$ docker-machine ls
+
+# Para iniciar o detener la máquina docker
+$ docker-machine start|stop
+$ docker-machine stop default
+$ docker-machine start default
+
+# Se debe asociar las variables de entorno de la máquina docker hacia la
+# terminal en la que estemos trabajando
+$ docker-machine env default
+export DOCKER_TLS_VERIFY="1"
+export DOCKER_HOST="tcp://192.168.99.100:2376"
+export DOCKER_CERT_PATH="C:\Users\igalvarez\.docker\machine\machines\default"
+export DOCKER_MACHINE_NAME="default"
+export COMPOSE_CONVERT_WINDOWS_PATHS="true"
+# Run this command to configure your shell:
+# eval $("C:\Program Files\Docker Toolbox\docker-machine.exe" env default)
+
+# Este comando nos dará la información de las avriables para ejecutar en la
+# misma terminal. En mi caso, correr la siguiente línea en la terminal para
+# asociar el docker corriendo en la virtual machine hacia mi terminal actual
+eval $("C:\Program Files\Docker Toolbox\docker-machine.exe" env default)
+
+# Con esto, ya tengo un docker corriendo en una terminal particular
+
+# Para saber el número IP de la máquina docker
+$ docker-machine ip default
+
+
+
+/*Instalando una imgaen particular*/
+# Se siguen los pasos en la siguiente URL: https://docs.docker.com/get-started/part2/
+# Para instalar una imagen, deben existir los archivos de instalacion
+# necesarios para correr el docker. Estos archivos están en FirstDockerWin/
+$ ls
+Dockerfile		app.py			requirements.txt
+
+# Luego, se ejecuta como sigue:
+$ docker build -t friendlyhello .
+
+# Para correrlo background, utilizar la flag -d
+$ docker build -d -t friendlyhello .
+
+# Para revisar cuáles imagenes están corriendo en nuestro docker, verificar
+# con el siguiente comando
+$ docker container ls
+CONTAINER ID        IMAGE               COMMAND             CREATED
+1fa4ab2cf395        friendlyhello       "python app.py"     28 seconds ago
+
+# Para detener alguno de ellos, se le debe indicar el CONTAINER ID de la
+# imagen que querramos detener
+$ docker stop 1fa4ab2cf395
